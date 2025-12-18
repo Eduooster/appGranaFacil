@@ -1,7 +1,7 @@
 // app/(protected)/home.tsx
 
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable,Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
@@ -9,6 +9,10 @@ import MesesCarousel from "@/components/MesesCarousel";
 import BalancoSaldoBoxs from "@/components/BalancoSaldoBoxs";
 import PrincipaisMovimentacoes from "@/components/PrincipaisMovimentacoes";
 import { Insight, InsightChip } from "@/components/Insights";
+import Metas from "@/components/Metas";
+import { useAuth } from "@/context/AuthContext";
+import MesesCarouselFull from "@/components/MesesCarouselFull";
+import { LinearGradient } from 'expo-linear-gradient';
 
 type MesContexto = {
   mes: number;
@@ -38,6 +42,31 @@ function getMesAtual(): MesContexto {
     ano: now.getFullYear(),
   };
 }
+
+const metasMock = [
+    {
+      id: "1",
+      nome: "Fundo de Emergência",
+      valorAtual: 1200,
+      valorMeta: 5000,
+      prazo: "30/12/2025",
+    },
+    {
+      id: "2",
+      nome: "Viagem de Férias",
+      valorAtual: 800,
+      valorMeta: 3000,
+      prazo: "15/01/2026",
+    },
+    {
+      id: "3",
+      nome: "Novo Celular",
+      valorAtual: 400,
+      valorMeta: 1500,
+      prazo: "31/12/2025",
+    },
+  ];
+
 
 // MOCK (backend depois)
 // home.mock.ts (ou dentro do home.tsx)
@@ -147,40 +176,75 @@ export default function HomeScreen() {
   const [mes, setMes] = useState<MesContexto>(getMesAtual());
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
+  const {user} = useAuth()
   const hoje = new Date();
   const isMesAtual =
   mes.mes === hoje.getMonth() + 1 &&
   mes.ano === hoje.getFullYear();
   useEffect(() => {
-    setLoading(true);
+  setLoading(true);
+  setData(null); // <--- Adicione isso para forçar o skeleton
+  
+  fetchHomeMock(mes).then((response) => {
+    setData(response);
+    setLoading(false);
+  });
+}, [mes]);
+  function saudacaoDoDia() {
+  const hora = new Date().getHours();
 
-    fetchHomeMock(mes).then((response) => {
-      setData(response);
-      setLoading(false);
-    });
-  }, [mes]);
+  if (hora >= 5 && hora < 12) {
+    return "Bom dia";
+  } else if (hora >= 12 && hora < 18) {
+    return "Boa tarde";
+  } else {
+    return "Boa noite";
+  }
+}
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: "#000" }}
+      style={{ flex: 1, backgroundColor: "#020202e0" }}
       contentContainerStyle={{ paddingBottom: 24 }}
     >
-      {/* HEADER */}
-      <View style={styles.header}>
-        <View style={styles.iconRow}>
-          <Ionicons name="notifications-outline" size={28} color="#fff" />
-          <Ionicons name="settings-outline" size={28} color="#fff" />
+      
+      <LinearGradient
+  colors={['#4e09a8ff', '#4e09a800']}
+  style={styles.header}
+>
+ 
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <Pressable onPress={() => router.push("/profile")} style={styles.iconRow}>
+            <Ionicons name="person-outline" size={28} color="#fff" />
+          </Pressable>
+
+          <Text style={{ paddingRight: 25, color: "#fff", fontWeight: "400" }}>
+            {`Olá, ${user?.email}\n${saudacaoDoDia()} !`}
+          </Text>
+
+          <Pressable onPress={() => router.push("/profile")} style={{ paddingHorizontal: 10 }}>
+            <Ionicons name="notifications" size={28} color="#fff" />
+          </Pressable>
         </View>
 
-        <View style={styles.carouselWrapper}>
+        {/* Linha do carousel */}
+        <View style={{ marginTop: 20 }}>
           <MesesCarousel
             mesAtual={mes}
             onChangeMes={setMes}
+            receita={data?.receita ?? 0}
+            despesa={data?.despesa ?? 0}
           />
         </View>
-      </View>
+      </LinearGradient>
 
-      {/* CONTEÚDO */}
+      <View style={{ minHeight: 100 }}>
+          <InsightChip
+            insight={data?.insight}
+            loading={loading}
+          />
+        </View>
+      
       <View style={styles.content}>
        <BalancoSaldoBoxs
           receita={data?.receita ?? 0}
@@ -189,19 +253,20 @@ export default function HomeScreen() {
           loading={loading}
         />
 
-        {/* Reserva espaço para não "pular" */}
-        <View style={{ minHeight: 64 }}>
-          <InsightChip
-            insight={data?.insight}
-            loading={loading}
-          />
-        </View>
+       
+        
+        <View style={{minHeight:100}}>
 
-        <PrincipaisMovimentacoes
-         items={data?.movimentacoes ?? []}
-        loading={loading}
-        isMesAtual={isMesAtual}
-        />
+
+       
+            <PrincipaisMovimentacoes
+            items={data?.movimentacoes ?? []}
+            loading={loading}
+            isMesAtual={isMesAtual}
+            />
+         </View>
+
+        <Metas metas={metasMock}/>
       </View>
     </ScrollView>
   );
@@ -209,21 +274,27 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#4e09a8ff",
+   
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingTop: 50,
+    paddingBottom: 30,
+    borderBottomEndRadius:10
+  ,borderBottomStartRadius:20,minHeight: 150,
   },
 
   iconRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+  
     alignItems: "center",
+    justifyContent:"center",
+    backgroundColor:"#473647ff",
+    height:43,
+    width:43,borderRadius:100
   },
 
   carouselWrapper: {
-    marginTop: 12,
-    marginHorizontal: 40,
+    marginTop: 1,
+    marginHorizontal: 35,
   },
 
   content: {

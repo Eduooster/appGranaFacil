@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Animated } from "react-native";
+import { useEffect, useRef } from "react";
 
 export type InsightType = "ALERTA" | "ATENCAO" | "POSITIVO";
 
@@ -14,20 +15,47 @@ interface Props {
 }
 
 export function InsightChip({ insight, loading }: Props) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(10)).current;
+
   
+  useEffect(() => {
+    if (!loading && insight) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [loading, insight]);
+
   if (loading) {
     return <View style={styles.skeleton} />;
   }
 
-  // SEM INSIGHT → espaço vazio (mas EXISTE)
   if (!insight) {
     return <View style={styles.placeholder} />;
   }
 
   return (
-    <View style={styles.chip}>
+    <Animated.View
+      style={[
+        styles.chip,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY }],
+        },
+      ]}
+    >
       <Text style={styles.text}>{insight.mensagem}</Text>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -38,14 +66,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 999,
-    marginVertical: 30,
-    minHeight: 40,
+    marginTop: 30,
+    minHeight: 45,
     justifyContent: "center",
   },
 
   text: {
     fontSize: 13,
-    color: "#92400E",
+    color: "#92280eff",
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -54,7 +82,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "90%",
     height: 40,
-    backgroundColor: "#1e1e1e",
+    backgroundColor: "#252525ff",
     borderRadius: 20,
     marginVertical: 30,
   },
@@ -64,4 +92,3 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
 });
-

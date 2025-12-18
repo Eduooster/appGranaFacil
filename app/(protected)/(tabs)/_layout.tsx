@@ -1,35 +1,63 @@
-import { Tabs } from 'expo-router';
-
-import { HapticTab } from '@/components/haptic-tab';
-
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Ionicons } from '@expo/vector-icons';
-
+import { Tabs } from "expo-router";
+import { HapticTab } from "@/components/haptic-tab";
+import { Ionicons } from "@expo/vector-icons";
+import RadialFab from "@/components/RadialFabs";
+import { View, Text } from "react-native";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <Tabs
-      screenOptions={{
-       
-        headerShown: false,
-        tabBarButton: HapticTab,
-         tabBarActiveTintColor: 'white', // cor do ícone ativo
-          tabBarInactiveTintColor: '#888', // cor do ícone inativo
-         tabBarStyle: { backgroundColor: '#480E5B' }, // cor de fundo da tab bar
-  
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={28} color={"black"} />
-
+    <>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarButton: HapticTab,
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "#888",
+          tabBarStyle: {
+            backgroundColor: "#000000e7",
+            borderTopWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
+          },
         }}
-      />
-      
-    </Tabs>
+      >
+        {/* Home - à esquerda */}
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color }) => <Ionicons name="home" size={26} color={color} />,
+          }}
+        />
+
+         <Tabs.Screen
+          name="moreOptions"
+          options={{
+            title: "Mais",
+            tabBarIcon: ({ color }) => <Ionicons name="add-outline" size={26} color={color} />,
+          }}
+        />
+
+        
+
+        
+      </Tabs>
+
+      {/* RadialFab centralizado */}
+      <View
+        style={{
+          position: "absolute",
+          bottom: -10,
+          width: "100%",
+          alignItems: "center",
+        }}
+      >
+        <RadialFab
+          onReceita={() => console.log("Receita")}
+          onDespesa={() => console.log("Despesa")}
+          onTransferencia={() => console.log("Transferência")}
+        />
+      </View>
+    </>
   );
 }

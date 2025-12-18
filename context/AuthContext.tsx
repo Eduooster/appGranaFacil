@@ -57,9 +57,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:8080/auth/login", {
+      
+
+      const response = await fetch("https://6ae7d5b98e87.ngrok-free.app/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" ,'ngrok-skip-browser-warning': 'true'},
         body: JSON.stringify({ email, senha: password }),
       });
 

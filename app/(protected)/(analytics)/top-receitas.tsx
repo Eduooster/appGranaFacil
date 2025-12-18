@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
    box: {
   alignSelf: "flex-start",
   marginBottom: 30,
+  paddingTop:32
   
 
   },

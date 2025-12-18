@@ -11,11 +11,14 @@ type MesContexto = {
 interface Props {
   mesAtual: MesContexto;
   onChangeMes: (novoMes: MesContexto) => void;
+  receita:number,
+  despesa: number;
 }
 
 export default function MesesCarousel({
   mesAtual,
   onChangeMes,
+  receita,despesa
 } : Props) {
   const fade = useRef(new Animated.Value(1)).current;
   const [mostrarSaldo, setMostrarSaldo] = useState(true);
@@ -58,6 +61,10 @@ export default function MesesCarousel({
           {formatarMesAno(mesAtual)}
         </Animated.Text>
 
+        <Text style={{color:"white",fontSize:30,fontWeight:"bold"}}>
+          R$ {receita}
+        </Text>
+
         <TouchableOpacity onPress={() => setMostrarSaldo(!mostrarSaldo)}>
           <Ionicons
             name={mostrarSaldo ? "eye-off-outline" : "eye-outline"}
@@ -65,6 +72,7 @@ export default function MesesCarousel({
             color="white"
           />
         </TouchableOpacity>
+       
       </View>
 
       <TouchableOpacity onPress={() => handleChange("next")}>
@@ -83,17 +91,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     paddingHorizontal: 20,
-    backgroundColor:"#4e09a8ff"
+  
+    marginTop:20
   },
   mesContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   mesTexto: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 20,
+    fontWeight: "300",
     color: "white",
-    marginBottom: 5,
+    marginBottom: 10,
   },
   saldo: {
     fontSize: 24,

@@ -1,7 +1,18 @@
-import { router } from "expo-router";
-import { useContext, useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Button, Alert,StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Animated,
+  Keyboard,
+  Platform,
+} from "react-native";
+import { useRouter } from "expo-router";
 
 type LoginFormProps = {
   onLogin: (data: { email: string; password: string }) => Promise<boolean>;
@@ -10,56 +21,128 @@ type LoginFormProps = {
 export default function LoginForm({ onLogin }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-        const handleSubmit = async () => {
-        const success = await onLogin({ email, password });
-        if (!success) Alert.alert("Erro");
-        else router.replace("/(protected)/(tabs)/home");
-        };
+  
+
+    
+
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      Alert.alert("Erro", "Preencha todos os campos.");
+      return;
+    }
+
+    const success = await onLogin({ email, password });
+    if (success) {
+      router.replace("/(protected)/(tabs)/home");
+    } else {
+      Alert.alert("Erro", "E-mail ou senha incorretos.");
+    }
+  };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={styles.loginText}>Bem-Vindo de volta</Text>
-      <Text style={styles.loginText2}>Faça login para continuar</Text>
 
-      <Text>Email:</Text>
-      <TextInput style={styles.input} value={email} onChangeText={setEmail} />
+    <KeyboardAwareScrollView
+    showsVerticalScrollIndicator={false}
+      enableOnAndroid
+      extraScrollHeight={40}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingHorizontal: 20,
+        paddingTop: 40,
+        paddingBottom: 40,
+        
+      }}
+    >
+    <View style={styles.container}>
+      <Animated.View
+        style={[
+          styles.formWrapper,
+         ,
+        ]}
+      >
+       
+          <>
+            <Text style={styles.loginText}>Bem-Vindo de volta</Text>
+            <Text style={styles.loginText2}>Faça login para continuar</Text>
+          </>
+        
 
-      <Text>Senha:</Text>
-      <TextInput style={styles.input} secureTextEntry value={password} onChangeText={setPassword} />
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
+        <Text style={styles.label}>Senha</Text>
+        <TextInput
+          style={styles.input}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
 
-      
-
-      <TouchableOpacity style={[styles.button, styles.activeButton]}>
-              <Text style={styles.buttonText}  onPress={() => onLogin({ email, password })}>Entrar</Text>
-    </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}
+        >
+          <Text style={styles.buttonText}>Entrar</Text>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
+    </KeyboardAwareScrollView>
   );
 }
 
-
 const styles = StyleSheet.create({
-     loginText:{fontSize:20,marginBottom:10},
-  loginText2:{marginBottom:20,color:"#706f6fff"},
+  container: {
+   
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingTop:50
+  },
+  formWrapper: {
+    width: "100%",
+  },
+  loginText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  loginText2: {
+    fontSize: 16,
+    marginBottom: 30,
+    color: "#706f6f",
+  },
+  label: {
+    fontSize: 14,
+    marginBottom: 5,
+    fontWeight: "500",
+  },
   input: {
-    backgroundColor: "#eee",
-    padding: 10,
+    backgroundColor: "#f5f5f5",
+    padding: 12,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
   },
   button: {
-    paddingVertical: 7,
-    paddingHorizontal: 25,
+    marginTop: 10,
+    paddingVertical: 12,
     borderRadius: 8,
+    backgroundColor: "#020202",
   },
-   activeButton: {
-    backgroundColor: "#020202ff",
-  },
-   buttonText: {
+  buttonText: {
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
-  }
+    fontSize: 16,
+  },
+});
 
-})

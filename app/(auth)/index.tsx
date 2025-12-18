@@ -1,7 +1,7 @@
 // app/(auth)/index.tsx
 
-import { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, Alert, TouchableOpacity,StyleSheet } from "react-native";
+import { useState, useEffect, useRef } from "react";
+import { View, Text, TextInput, Button, Alert, TouchableOpacity,StyleSheet, Animated } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 
@@ -16,6 +16,11 @@ export default function LoginScreen() {
   const [showCadastro, setShowCadastro] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  
+
+  
 
   const handleLogin = async () => {
     const success = await signIn({ email, password });
@@ -86,12 +91,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 27,
-    paddingTop: 20,
+    paddingTop: 1,
   },
   textContainer: {
     width: "100%",
     backgroundColor: "#480E5B",
-    paddingVertical: 27,
+    paddingVertical: 2,
     alignItems: "center",
   },
   title: {
@@ -109,7 +114,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 20,
+    
     gap: 4,
   },
   button: {
