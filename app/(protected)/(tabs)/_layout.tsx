@@ -4,12 +4,14 @@ import { Ionicons } from "@expo/vector-icons";
 import RadialFab from "@/components/RadialFabs";
 import { View, Text } from "react-native";
 
+
 export default function TabLayout() {
   return (
     <>
       <Tabs
         screenOptions={{
           headerShown: false,
+          
           tabBarButton: HapticTab,
           tabBarActiveTintColor: "white",
           tabBarInactiveTintColor: "#888",
@@ -19,9 +21,10 @@ export default function TabLayout() {
             elevation: 0,
             shadowOpacity: 0,
           },
+          
         }}
       >
-        {/* Home - à esquerda */}
+        
         <Tabs.Screen
           name="home"
           options={{
@@ -43,7 +46,7 @@ export default function TabLayout() {
         
       </Tabs>
 
-      {/* RadialFab centralizado */}
+      
       <View
         style={{
           position: "absolute",

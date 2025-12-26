@@ -6,19 +6,16 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/context/AuthContext';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
+  
   return (
-    <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
+    
        <AuthProvider>
-          <Stack screenOptions={{ headerShown: false }}>
+          <Stack screenOptions={{ headerShown: false ,contentStyle:{backgroundColor:"#161616ff"}}}>
           </Stack>
         </AuthProvider>
-    </ThemeProvider>
+   
   );
 }

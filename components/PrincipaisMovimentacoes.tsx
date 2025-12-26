@@ -43,9 +43,9 @@ export default function MovimentacoesRecentes({
             </View>
 
             <Ionicons
-            name="chevron-forward"   // ou "arrow-forward" se quiser um estilo diferente
-            size={24}                 // tamanho do ícone
-            color="white"             // cor do ícone
+            name="chevron-forward"   
+            size={24}                 
+            color="white"             
           />
           </View>
         </Pressable>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
       
   },
   container: {
-    padding: 20,
+    padding: 10,
     backgroundColor: "#313130ff",
     borderRadius: 20,
     marginVertical: 30,

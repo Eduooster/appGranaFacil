@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 
 export default function PerfilScreen() {
 
    const { signOut, loading } = useAuth();
+   const router = useRouter();
 
   function handleSignOut() {
     signOut()
@@ -15,12 +16,12 @@ export default function PerfilScreen() {
   return (
     <View style={styles.container}>
         <View style={styles.iconesContainer}>
-           <Pressable onPress={() => router.replace("/")} >
+           <Pressable onPress={() => router.canGoBack() && router.back()} >
             <Ionicons name="arrow-back" size={26} color="#fff" />
             </Pressable>
     
             <Pressable
-              onPress={() => router.push("/settings")}
+              onPress={() => router.navigate("/settings")}
               
             >
               <Ionicons name="settings-outline" size={26} color="#fff" />
@@ -29,7 +30,7 @@ export default function PerfilScreen() {
       </View>
         
 
-      {/* PERFIL CENTRAL */}
+      
       <View style={styles.profileCenter}>
         <Image
           source={{ uri: "https://i.pravatar.cc/150" }}
@@ -45,7 +46,7 @@ export default function PerfilScreen() {
         
         <ProfileItem
           label="Meus dados pessoais"
-          onPress={() => router.push("/perfil/dados")}
+          onPress={() => router.push("/person-information")}
         />
 
          
@@ -99,8 +100,7 @@ function ProfileItem({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor:"#000000e7",paddingTop:50
+    padding: 20,paddingTop:50,width:"100%"
   },
   configBtn: {
     position: "absolute",

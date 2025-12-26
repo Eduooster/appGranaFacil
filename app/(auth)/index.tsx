@@ -1,53 +1,57 @@
 // app/(auth)/index.tsx
 
-import { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, Button, Alert, TouchableOpacity,StyleSheet, Animated } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { useAuth } from "../../context/AuthContext";
-
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
+
+import { useAuth } from "../../context/AuthContext";
 import LoginForm from "@/components/LoginForm";
 import CadastroForm from "@/components/CadastroForm";
+import cadastrarUsuario from "@/services/authService";
+
+
+type CadastroData = {
+  nome: string;
+  sobrenome: string;
+  email:string;
+  senha:string;
+};
 
 export default function LoginScreen() {
   const { signIn, authToken } = useAuth();
   const router = useRouter();
+
   const [showLogin, setShowLogin] = useState(true);
   const [showCadastro, setShowCadastro] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
 
-  
+  const [pluggyOptIn, setPluggyOptIn] = useState<boolean | undefined>(undefined);
 
-  
+   function responderPluggy(optIn: boolean) {
+    setPluggyOptIn(optIn);
+    console.log("Usuário respondeu:", optIn ? "Aceitou conectar" : "Não quis conectar");
+  }
 
-  const handleLogin = async () => {
-    const success = await signIn({ email, password });
+  async function handleCadastro(data: CadastroData) {
+    const ok = await cadastrarUsuario(data);
 
-    console.log(success)
-
-    if (!success) {
-      Alert.alert("Erro", "Erro ao fazer login. Verifique suas credenciais.");
+    if (!ok) {
+      Toast.show({
+        type: "error",
+        text1: "Erro ao cadastrar",
+      });
+      return;
     }
-  };
 
-  useEffect(() => {
-    setShowLogin(true);
-  }, []);
+    Toast.show({
+      type: "success",
+      text1: "Cadastro realizado",
+      text2: "Faça login para continuar",
+    });
 
-  function handleOpenLogin() {
-    setShowLogin(true);
     setShowCadastro(false);
-  }
-
-  function handleOpenCadastro() {
-    setShowCadastro(true);
-    setShowLogin(false);
-  }
-
-  function handleCadastro() {
-    router.push("/");
+    setShowLogin(true);
   }
 
   useEffect(() => {
@@ -67,14 +71,20 @@ export default function LoginScreen() {
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
             style={[styles.button, showLogin ? styles.activeButton : styles.inactiveButton]}
-            onPress={handleOpenLogin}
+            onPress={() => {
+              setShowLogin(true);
+              setShowCadastro(false);
+            }}
           >
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, showCadastro ? styles.activeButton : styles.inactiveButton]}
-            onPress={handleOpenCadastro}
+            onPress={() => {
+              setShowCadastro(true);
+              setShowLogin(false);
+            }}
           >
             <Text style={styles.buttonText}>Cadastro</Text>
           </TouchableOpacity>
@@ -91,20 +101,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 27,
-    paddingTop: 1,
+    backgroundColor: "#202020ff",
   },
   textContainer: {
     width: "100%",
     backgroundColor: "#480E5B",
-    paddingVertical: 2,
+    paddingVertical: 12,
     alignItems: "center",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-    marginTop: 20,
     color: "#fff",
   },
   subtitle: {
@@ -114,7 +121,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    
+    paddingTop: 20,
     gap: 4,
   },
   button: {
@@ -123,7 +130,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activeButton: {
-    backgroundColor: "#020202ff",
+    backgroundColor: "#1b1b1bff",
   },
   inactiveButton: {
     backgroundColor: "#ccc",
@@ -134,4 +141,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-

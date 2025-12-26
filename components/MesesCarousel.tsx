@@ -61,9 +61,12 @@ export default function MesesCarousel({
           {formatarMesAno(mesAtual)}
         </Animated.Text>
 
-        <Text style={{color:"white",fontSize:30,fontWeight:"bold"}}>
-          R$ {receita}
-        </Text>
+        {receita !== null && receita !== undefined && (
+          <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
+            R$ {receita}
+          </Text>
+        )}
+        
 
         <TouchableOpacity onPress={() => setMostrarSaldo(!mostrarSaldo)}>
           <Ionicons

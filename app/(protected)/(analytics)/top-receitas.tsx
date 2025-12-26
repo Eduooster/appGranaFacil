@@ -20,7 +20,7 @@ export default function TopReceitasScreen() {
   const router = useRouter();
 
   function goToHome(){
-    router.push("/home")
+    router.back()
   }
 
   const totalReceitas = MOCK_RECEITAS.reduce(
@@ -95,7 +95,7 @@ export default function TopReceitasScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#020202e0",
     padding: 20,
   },
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
 
   row: {
-    backgroundColor: "#1e1e1e",
+    backgroundColor: "#4e09a831",
     borderRadius: 10,
     padding: 14,
   },

@@ -63,17 +63,18 @@ const styles = StyleSheet.create({
   chip: {
     alignSelf: "center",
     backgroundColor: "#313130ff",
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 999,
-    marginTop: 30,
+    marginTop: 0,
     minHeight: 45,
     justifyContent: "center",
+    width: "90%",
   },
 
   text: {
     fontSize: 13,
-    color: "#92280eff",
+    color: "#8038afff",
     fontWeight: "bold",
     textAlign: "center",
   },

@@ -104,7 +104,8 @@ const styles = StyleSheet.create({
    
     justifyContent: "center",
     paddingHorizontal: 20,
-    paddingTop:50
+    paddingVertical:50
+    ,backgroundColor:"#3a3939ff",borderRadius:20
   },
   formWrapper: {
     width: "100%",
@@ -113,6 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 5,
+    color:"white"
   },
   loginText2: {
     fontSize: 16,
@@ -123,6 +125,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 5,
     fontWeight: "500",
+    color:"white"
   },
   input: {
     backgroundColor: "#f5f5f5",
@@ -131,6 +134,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderWidth: 1,
     borderColor: "#ddd",
+    
   },
   button: {
     marginTop: 10,

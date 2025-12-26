@@ -2,12 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 
-interface Props {
-  receita: number;
-  despesa: number;
-  variacao: number;
+type Props = {
+  receita?: number | null;
+  despesa?: number | null;
+  variacao?: number | null;
   loading: boolean;
-}
+};
+
 
 export default function BalancoSaldoBoxs({
   receita,
@@ -16,6 +17,10 @@ export default function BalancoSaldoBoxs({
   loading,
 }: Props) {
   const router = useRouter();
+  const corVariacao =
+  variacao !== null && variacao !== undefined && variacao >= 0
+    ? "#6ece6ac0"
+    : "#b63d3dea";
 
   if(loading){
     return (
@@ -41,9 +46,11 @@ export default function BalancoSaldoBoxs({
 
  
 
+ 
+
   return (
     <View style={styles.summaryRow}>
-      {/* Receita */}
+      
       <Pressable
         style={({ pressed }) => [
           styles.box,
@@ -55,12 +62,16 @@ export default function BalancoSaldoBoxs({
           <Text style={styles.label}>Receita</Text>
           <Ionicons name="arrow-up" size={18} color="green" style={styles.icon} />
         </View>
+        {receita !== null && receita !== undefined && (
         <Text style={[styles.value, { color: "#6ece6ac0" }]}>
           R$ {receita.toFixed(2)}
         </Text>
+        
+      )}
+        
       </Pressable>
 
-      {/* Despesa */}
+      
       <Pressable
         style={({ pressed }) => [
           styles.box,
@@ -73,11 +84,11 @@ export default function BalancoSaldoBoxs({
           <Ionicons name="arrow-down" size={18} color="red" style={styles.icon} />
         </View>
         <Text style={[styles.value, { color: "#b63d3dea" }]}>
-          R$ {despesa.toFixed(2)}
+          R$ {despesa?.toFixed(2)}
         </Text>
       </Pressable>
 
-      {/* Variação */}
+     
       <Pressable
         style={({ pressed }) => [
           styles.box,
@@ -90,11 +101,11 @@ export default function BalancoSaldoBoxs({
           <Ionicons
             name="swap-vertical"
             size={18}
-            color={variacao >= 0 ? "#6ece6ac0" : "#b63d3dea"}
+            color={corVariacao}
             style={styles.icon}
           />
         </View>
-        <Text style={[styles.value, { color: variacao >= 0 ? "#6ece6ac0" : "#b63d3dea" }]}>
+        <Text style={[styles.value, {color:corVariacao}]}>
           {variacao}%
         </Text>
       </Pressable>
@@ -106,7 +117,7 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20
+    marginTop: 5
   },
   box: {
     backgroundColor: "#111111de",

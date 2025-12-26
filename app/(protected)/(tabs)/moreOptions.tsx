@@ -12,7 +12,7 @@ export default function moreOptions(){
        
         title="Gerenciar OpenFinance"
         description="Gerencie openfinacne"
-        onPress={() => router.push("/configuracoes/preferencias")}
+        onPress={() => router.push("/(protected)/contas-financeiras")}
       />
 
       
@@ -20,9 +20,9 @@ export default function moreOptions(){
       <Divider />
       <ConfigItem
        
-        title="Cartões"
-        description="Veja seus cartões"
-        onPress={() => router.push("/configuracoes/preferencias")}
+        title="Contas"
+        description="Veja suas contas"
+        onPress={() => router.push("/contas-financeiras")}
       />
        <Divider />
       <ConfigItem

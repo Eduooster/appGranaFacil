@@ -1,11 +1,15 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
+
 
 export default function ConfiguracoesScreen() {
+  const router = useRouter();
+
+  
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.replace("/profile")} >
+      <Pressable onPress={() => router.back()} >
             <Ionicons name="arrow-back" size={24} color="#fff" />
       </Pressable>
       <Text style={styles.title}>Configurações</Text>
@@ -86,11 +90,13 @@ function Divider() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    paddingTop:50,
-    backgroundColor:"#000000e7"
-  },
+  flex: 1,
+  width: "100%",
+  padding: 20,
+  paddingTop: 50,
+  
+  
+},
   title: {
     fontSize: 26,
     fontWeight: "600",

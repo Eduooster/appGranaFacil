@@ -1,17 +1,17 @@
 // app/(protected)/home.tsx
 
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Pressable,Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { Button, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import MesesCarousel from "@/components/MesesCarousel";
 import BalancoSaldoBoxs from "@/components/BalancoSaldoBoxs";
-import PrincipaisMovimentacoes from "@/components/PrincipaisMovimentacoes";
 import { Insight, InsightChip } from "@/components/Insights";
+import MesesCarousel from "@/components/MesesCarousel";
 import Metas from "@/components/Metas";
+import PluggyConnectScreen from "@/components/PluggyConnectionScreen";
+import PrincipaisMovimentacoes from "@/components/PrincipaisMovimentacoes";
 import { useAuth } from "@/context/AuthContext";
-import MesesCarouselFull from "@/components/MesesCarouselFull";
 import { LinearGradient } from 'expo-linear-gradient';
 
 type MesContexto = {
@@ -68,21 +68,16 @@ const metasMock = [
   ];
 
 
-// MOCK (backend depois)
-// home.mock.ts (ou dentro do home.tsx)
+
 function fetchHomeMock({ mes }: MesContexto): Promise<HomeData> {
   return new Promise((resolve) => {
     setTimeout(() => {
       if (mes === 11) {
         resolve({
-          receita: 5200,
+          receita: 0,
           despesa: 3100,
           variacao: 12,
-          insight: {
-            id: "1",
-            tipo: "ALERTA",
-            mensagem: "Você já usou 82% do orçamento de Delivery este mês.",
-          },
+          insight: null,
           movimentacoes: [
             {
               id: "1",
@@ -155,14 +150,10 @@ function fetchHomeMock({ mes }: MesContexto): Promise<HomeData> {
       }
 
       resolve({
-        receita: 4100,
-        despesa: 2700,
+        receita: 0,
+        despesa: 0,
         variacao: 5,
-        insight: {
-          id: "3",
-          tipo: "POSITIVO",
-          mensagem: "Bom controle financeiro neste mês.",
-        },
+        insight: null,
         movimentacoes: [],
       });
     }, 600);
@@ -171,6 +162,7 @@ function fetchHomeMock({ mes }: MesContexto): Promise<HomeData> {
 
 
 export default function HomeScreen() {
+  console.log("home renderizou")
   const router = useRouter();
 
   const [mes, setMes] = useState<MesContexto>(getMesAtual());
@@ -178,18 +170,29 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const {user} = useAuth()
   const hoje = new Date();
+  const [pluggyOptIn, setPluggyOptIn] = useState<boolean | undefined>(undefined);
   const isMesAtual =
   mes.mes === hoje.getMonth() + 1 &&
   mes.ano === hoje.getFullYear();
-  useEffect(() => {
-  setLoading(true);
-  setData(null); // <--- Adicione isso para forçar o skeleton
-  
-  fetchHomeMock(mes).then((response) => {
-    setData(response);
-    setLoading(false);
-  });
-}, [mes]);
+  const ultimoMesCarregado = useRef<MesContexto | null>(null);
+
+      useEffect(() => {
+         console.log("HOME MONTADA");
+      if (
+        ultimoMesCarregado.current?.mes === mes.mes &&
+        ultimoMesCarregado.current?.ano === mes.ano
+      ) {
+        return () => console.log("HOME DESMONTADA");
+      }
+
+      setLoading(true);
+
+      fetchHomeMock(mes).then((response) => {
+        setData(response);
+        setLoading(false);
+        ultimoMesCarregado.current = mes;
+      });
+    }, [mes.mes, mes.ano]);
   function saudacaoDoDia() {
   const hora = new Date().getHours();
 
@@ -201,6 +204,14 @@ export default function HomeScreen() {
     return "Boa noite";
   }
 }
+   function responderPluggy(optIn: boolean) {
+    setPluggyOptIn(optIn);
+    console.log("Usuário respondeu:", optIn ? "Aceitou conectar" : "Não quis conectar");
+   
+   
+  }
+
+ 
 
   return (
     <ScrollView
@@ -209,12 +220,12 @@ export default function HomeScreen() {
     >
       
       <LinearGradient
-  colors={['#4e09a8ff', '#4e09a800']}
+  colors={['#4e09a8ff', 'rgba(74, 74, 75, 0)']}
   style={styles.header}
 >
  
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-          <Pressable onPress={() => router.push("/profile")} style={styles.iconRow}>
+          <Pressable onPress={() => router.navigate("/profile")} style={styles.iconRow}>
             <Ionicons name="person-outline" size={28} color="#fff" />
           </Pressable>
 
@@ -227,7 +238,6 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Linha do carousel */}
         <View style={{ marginTop: 20 }}>
           <MesesCarousel
             mesAtual={mes}
@@ -237,22 +247,45 @@ export default function HomeScreen() {
           />
         </View>
       </LinearGradient>
+      <View style={styles.container}>
+          {pluggyOptIn === undefined && (
+        <View style={styles.card}>
+          <Text style={styles.text}>Quer conectar sua conta com a Pluggy? É seguro e rápido!</Text>
+          <View style={styles.buttons}>
+            
+          
+            <Pressable style={styles.button}onPress={()=> router.navigate("/pluggyInformations")}>
+               <Text style={{color:'#f0f0f0ff'}}>Saiba mais</Text>
+            </Pressable>
+            <Pressable style={styles.button} onPress={()=> responderPluggy(false)}>
+              <Text style={{color:'#f0f0f0ff'}}>Não Obrigado! </Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
 
-      <View style={{ minHeight: 100 }}>
+    </View>
+
+      <View style={{ minHeight: 62 }}>
+          {data?.insight ? (
           <InsightChip
-            insight={data?.insight}
+            insight={data.insight}
             loading={loading}
           />
+        ) : (
+          <Text style={{ textAlign: "center", marginVertical: 1,color:"white" }}>
+            Sem insights esse mês
+          </Text>
+        )}
         </View>
       
       <View style={styles.content}>
        <BalancoSaldoBoxs
-          receita={data?.receita ?? 0}
-          despesa={data?.despesa ?? 0}
-          variacao={data?.variacao ?? 0}
-          loading={loading}
-        />
-
+        receita={data?.receita}
+        despesa={data?.despesa}
+        variacao={data?.variacao}
+        loading={loading}
+      />
        
         
         <View style={{minHeight:100}}>
@@ -266,7 +299,10 @@ export default function HomeScreen() {
             />
          </View>
 
+
+
         <Metas metas={metasMock}/>
+        
       </View>
     </ScrollView>
   );
@@ -301,4 +337,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
   },
+   container: { flex: 1, justifyContent: "center", padding: 24 },
+  card: { padding: 16, margin: 16, backgroundColor: "#2b2b2bff", borderRadius: 8 },
+  text: { fontSize: 16, marginBottom: 12,color:"#fff" },
+  buttons: { flexDirection: "row", justifyContent: "space-between" },
+  button:{
+    backgroundColor: "#4e09a8ab",
+  flexDirection: 'row',
+  padding: 16,
+  borderRadius: 12,
+  alignItems: 'center',
+  justifyContent: 'center',
+  
+  }
 });
